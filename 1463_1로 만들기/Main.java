@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 class Main{
     static int[] dp;
@@ -13,62 +9,55 @@ class Main{
 
         int n = Integer.parseInt(br.readLine());
         dp = new int[n+1];
+        
+        // buttom up
+        //bottumUp(n);
+        //System.out.println(dp[n]);
 
-        for(int i=2;i<=n;i++){
+        // top down
+        if(n == 1){
+            System.out.println(0);
+            return;
+        }
+        dp[2] = 1;
+        System.out.println(topDown(n));
+    }
+
+    static int topDown(int idx){
+        if(idx < 2){
+            return 0;
+        }
+        if(dp[idx] != 0){
+            return dp[idx];
+        }
+        
+        if(idx % 3 == 0){
+            dp[idx] = getMin(dp[idx], 1 + topDown(idx / 3));
+        }
+        if(idx % 2 == 0){
+            dp[idx] = getMin(dp[idx], 1 + topDown(idx / 2));
+        }
+        dp[idx] = getMin(dp[idx], 1 + topDown(idx - 1));
+
+        return dp[idx];
+    }
+
+    static void bottumUp(int n){
+        for(int i=2; i<=n; i++){
             if(i % 3 == 0){
-                setDp(i, 3);
+                dp[i] = getMin(dp[i], 1 + dp[i / 3]);
             }
-
             if(i % 2 == 0){
-                setDp(i, 2);
+                dp[i] = getMin(dp[i], 1 + dp[i / 2]);
             }
-            
-            if(dp[i] == 0){
-                dp[i] = 1 + dp[i-1];
-            }
-            else{
-                dp[i] = min(dp[i], 1 + dp[i-1]);
-            }
+            dp[i] = getMin(dp[i], 1 +  dp[i-1]);
         }
-        System.out.println(dp[n]);
-
     }
 
-    // static void calc(int n, int cnt){
-    //     if(dp[n] != 0){
-    //         return dp[n];
-    //     }
-
-    //     if(n == 1){
-    //         return ;
-    //     }
-
-    //     if(n % 3 == 0){
-    //         setDp(n, 3);
-    //     }
-    //     else if(n % 2 == 0){
-    //         setDp(n, 2);
-    //     }
-    //     else{
-    //         if(dp[n] == 0){
-    //             dp[n] = 1 + dp[n-1];
-    //         }
-    //         else{
-    //             dp[n] = min(dp[n], 1 + dp[n-1]);
-    //         }
-    //     }
-    // }
-
-    static int min(int n1, int n2){
-        return n1 <= n2 ? n1 : n2;
-    }
-
-    static void setDp(int n, int div){
-        if(dp[n] == 0){
-            dp[n] = 1 + dp[n/div];
+    static int getMin(int a, int b){
+        if(a == 0){
+            return b;
         }
-        else{
-            dp[n] = min(dp[n], 1 + dp[n/div]);
-        }
+        return a > b ? b : a;
     }
 }
